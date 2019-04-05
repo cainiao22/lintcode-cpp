@@ -1,6 +1,6 @@
 #include <QCoreApplication>
 
-int main1(int argc, char *argv[])
+int run(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 

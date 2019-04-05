@@ -16,7 +16,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-    repeated-substring-pattern.cpp
+    repeated-substring-pattern.cpp \
+    process-sequence.cpp \
+    paper-review.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
