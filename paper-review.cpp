@@ -38,18 +38,103 @@
             "you"
             总长度为6
             相似度为2/6=0.33
+
+
+* @solution 并查集应用 + 最长公共子序列
 */
 
 
 #include<iostream>
 #include<string>
 #include<vector>
+#include<map>
+
 using namespace std;
 
 class PaperReview
 {
+public:
+    map<string, string> map;
+
+    string find(string s)
+    {
+        if(map[s] == s)
+        {
+            return s;
+        }
+        map.insert(pair<string, string>(s, find(map[s])));
+        return map[s];
+    }
+
+    void union_(string a, string b)
+    {
+        string pa = find(a);
+        string pb = find(b);
+        map.insert(pair<string, string>(pa, pb));
+    }
+
     float getSimilarity(vector<string> &words1, vector<string> &words2, vector<vector<string>> &pairs)
     {
         // Write your code here
+        for(int i=0; i<pairs.size(); i++)
+        {
+            map.insert(pair<string, string>(pairs[i][0], pairs[i][1]));
+        }
+        for(int i=0; i<words1.size(); i++)
+        {
+            if(map.count(words1[i]) == 0)
+            {
+                map.insert(pair<string, string>(words1[i], words1[i]));
+            }
+        }
+
+        for(int i=0; i<words2.size(); i++)
+        {
+            if(!map.count(words2[i]))
+            {
+                map.insert(pair<string, string>(words2[i], words2[i]));
+            }
+        }
+
+        int dp[words1.size() + 1][words2.size() + 1];
+        for(int i=0; i<=words1.size(); i++)
+        {
+           for(int j=0; j<=words2.size(); j++)
+           {
+               dp[i][j] = 0;
+           }
+        }
+
+        for(int i=1; i<=words1.size(); i++)
+        {
+            string p1 = find(words1[i - 1]);
+            for(int j=1; j<=words2.size(); j++)
+            {
+                dp[i][j] = max(dp[i-1][j], dp[i][j-1]);
+                string p2 = find(words2[j - 1]);
+                if(p1 == p2)
+                {
+                    dp[i][j] = max(dp[i][j], dp[i-1][j-1] + 1);
+                }
+            }
+        }
+
+        double len = dp[words1.size()][words2.size()];
+
+        return len * 2 / (words1.size() + words2.size());
+    }
+
+    void run()
+    {
+        vector<string> w1({"great","acting","skills","life"});
+        vector<string> w2({"fine","drama","talent","health"});
+        //["great", "good"], ["fine", "good"], ["acting","drama"], ["skills","talent"]
+        vector<string> p1({"great", "good"});
+        vector<string> p2({"fine", "good"});
+        vector<string> p3({"acting","drama"}), p4({"skills","talent"});
+        vector<vector<string>> pairs({p1, p2, p3, p4});
+        double result = this->getSimilarity(w1, w2, pairs);
+        cout<<result<<endl;
     }
 };
+
